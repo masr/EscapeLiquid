@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escape Liquid</title>
+    <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+</head>
+<body>
+
+<div id="container" style="margin:10px auto; width:60%;">
+    <h1>Escape Liquid</h1>
+
+    <p> How can we show liquid code in the article if we use liquid template like jekyll and so on? It seems a little
+        painful. This little tool can help you.</p>
+
+    <p> Please paste liquid code into the form. I'll escape the code and then you can copy the code back into your
+        editor.
+        And you can show liquid code in liquid environemtn now.</p>
+
+    <form>
+        <fieldset>
+            <legend>Paste liquid code</legend>
+            <textarea id="txt" style="width:85%;height:250px;color:#000;font-weight: bold;">
+            </textarea>
+            <button class="btn" id="escape_button" style="display: block">Escape Now.</button>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        String.prototype.replaceAll = function (reallyDo, replaceWith, ignoreCase) {
+            if (!RegExp.prototype.isPrototypeOf(reallyDo)) {
+                return this.replace(new RegExp(reallyDo, (ignoreCase ? "gi" : "g")), replaceWith);
+            } else {
+                return this.replace(reallyDo, replaceWith);
+            }
+        };
+
+        $("#txt").val("{% for tag in site.tags %}\
+                \n        <a href=\"{{ site.url }}/tag/{{ tag[0] }}/\" title=\"{{ tag[1].size }} posts\" rel=\"{{ tag[1].size }}\">{{tag[0]}}</a>\
+    \n{% endfor %}");
+        $("#escape_button").click(function () {
+            var txt = $("#txt").val();
+            txt = txt.replaceAll("{{", "{{{")
+                    .replaceAll("}}", "}}}")
+                    .replaceAll("{%", "{{\"{%")
+                    .replaceAll("%}", "\"}} %}")
+                    .replaceAll("{{{", "{{\"{{")
+                    .replaceAll("}}}", "\"}} }}");
+            $("#txt").fadeOut().fadeIn({complete:function () {
+                $(this).val(txt);
+            }});
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>
